@@ -9,4 +9,6 @@ export const Colors = {
     LIGHT_BUTTON: '#8bc34a',
     LIGHT_BORDER: '#33691e',
     LIGHT_ICON: '#33691e',
+    WHITE: '#ffffff',
+    BLACK: '#000000',
 }
