@@ -8,13 +8,17 @@ export const CastomMap = () => {
     const dispatch = useDispatch()
     const position = useSelector(state => state.position.position)
     const polygonPoints = useSelector(state => state.polygonPoint.points)
+    const draw = useSelector(state => state.polygonPoint.draw)
 
     const polygonRef = useRef()
     const mapRef = useRef()
 
     const setPolygonPoint = e => {
+        if (!draw) return
+
         const lat = e.get('coords')[0]
         const lan = e.get('coords')[1]
+
         dispatch(addPoint([lat, lan]))
     }
 

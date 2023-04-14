@@ -14,8 +14,8 @@ export const positionSlice = createSlice({
         changePosition: (state, action) => {
             const newPosition = {
                 ...state.position,
-                lan: Number(action.payload[1]),
-                lat: Number(action.payload[0]),
+                lan: action.payload[1],
+                lat: action.payload[0],
             }
             state.position = newPosition
         }

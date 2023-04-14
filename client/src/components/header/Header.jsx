@@ -4,17 +4,18 @@ import styled from 'styled-components'
 import { Colors } from '../../assets/theme/Colors'
 import { ThemeButton } from './ThemeButton'
 import { Search } from './SearchControll';
+import { PolygonButton } from './PolygonButton';
 
 export const Header = () => {
   const isDark = useSelector(state => state.theme.isDark)
 
   return <NavBar isDark={isDark}>
-    <Title isDark={isDark}>Creation of a cellular drinking water supply system project</Title>
+    <Title isDark={isDark}>Drinking water supply system</Title>
     <Search />
+    <PolygonButton />
     <ThemeButton />
   </NavBar>
 }
-
 
 const NavBar = styled.header`
   min-width: 100%;

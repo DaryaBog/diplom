@@ -1,8 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
-    points: []
-};
+    points: [],
+    draw: false
+}
 
 export const polygonPointSlice = createSlice({
     name: 'polygon',
@@ -11,12 +12,14 @@ export const polygonPointSlice = createSlice({
         addPoint: (state, action) => {
             state.points.push([action.payload[0], action.payload[1]])
         },
-
-        changeTheme: (state, action) => {
-            state.isDark = !state.isDark
-        }
+        onCancelLastPoint: (state, action) => {
+            state.points.pop()
+        },
+        onDraw: (state, action) => {
+            state.draw = !state.draw
+        },
     }
 });
 
-export const { addPoint } = polygonPointSlice.actions;
+export const { addPoint, onCancelLastPoint, onDraw } = polygonPointSlice.actions;
 export default polygonPointSlice.reducer;
