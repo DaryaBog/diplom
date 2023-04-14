@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import styled from 'styled-components'
 import { Colors } from '../../assets/theme/Colors'
 import { changePosition } from '../../Slices/positionSlise'
+import { api } from '../../api'
 
 export const Search = () => {
     const dispatch = useDispatch()
@@ -10,14 +11,10 @@ export const Search = () => {
 
     const [changingTown, setChangingTown] = useState()
 
-    const getTown = async (e) => {
-        await fetch(`https://geocode-maps.yandex.ru/1.x/?apikey=2fcf50c3-38d1-4cda-a5a9-da7983b01137&format=json&geocode=${changingTown || 'Новочеркасск'}`, {
-            headers: {
-                'Access-Control-Allow-Origin': '*'
-            }
-        }).then(res => res.json()).then(res => {
-            console.log('ok')
-            dispatch(changePosition(res?.response?.GeoObjectCollection?.featureMember[0]?.GeoObject?.Point?.pos.split(' ')))
+    const getTown = (e) => {
+        e.preventDefault()
+        api.getNewPosition(changingTown).then(res => {
+            dispatch(changePosition(res))
         })
     }
 
