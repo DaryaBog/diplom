@@ -4,6 +4,7 @@ import styled from 'styled-components'
 import { Colors } from './assets/theme/Colors'
 import { Header } from './components/header/Header';
 import { MapContainer } from './components/map/MapContainer';
+import { CalculateContainer } from './components/calculate/CalculateContainer';
 
 function App() {
   const isDark = useSelector(state => state.theme.isDark)
@@ -12,11 +13,16 @@ function App() {
     <AppWrapper isDark={isDark}>
       <Header />
       <MapContainer />
+      <CalculateContainer />
     </AppWrapper >
   );
 }
 
 const AppWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   width: 100%;
   min-height: 100%;
   background: ${p => p.isDark ? Colors.DARK_WRAPPER : Colors.LIGHT_WRAPPER};

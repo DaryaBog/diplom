@@ -18,7 +18,7 @@ export const MapContainer = () => {
 }
 
 const ContainerMap = styled.div`
-  width: 100%;
+  width:  100%;
   height: 100%;
   background: ${p => p.isDark ? Colors.DARK_HEADER : Colors.LIGHT_HEADER};
 `
