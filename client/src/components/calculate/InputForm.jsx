@@ -2,20 +2,20 @@ import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import styled from 'styled-components'
 import { Colors } from '../../assets/theme/Colors'
-import { INPUT_DATA } from './inputConst'
-import { addData } from '../../Slices/calculateDataSlise'
+import { addInputData } from '../../Slices/calculateDataSlise'
+import { INPUT_DATA } from '../../constants'
 
 export const InputForm = () => {
     const dispatch = useDispatch()
     const isDark = useSelector(state => state.theme.isDark)
 
     const onChangeData = (e, lable) => {
-        dispatch(addData({ lable, text: e.target.value }))
+        dispatch(addInputData({ lable, text: e.target.value }))
     }
 
     const renderInput = data => {
         return (
-            <InputWrapper>
+            <InputWrapper key={data.text}>
                 <Lable >{data.text}</Lable>
                 {data.lable ? <Input name='town' onChange={(e) => onChangeData(e, data.lable)} /> : null}
             </InputWrapper>
