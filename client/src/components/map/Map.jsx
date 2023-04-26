@@ -1,25 +1,30 @@
-import React, { useCallback, useRef } from 'react'
+import React, { useCallback, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Map, Polygon } from '@pbe/react-yandex-maps'
+import { Map, Polygon, Placemark } from '@pbe/react-yandex-maps'
 import styled from 'styled-components'
-import { addPoint } from '../../Slices/polygonPointSlise'
+import { addPoint } from '../../Slices/mapPointSlice'
 
 export const CastomMap = () => {
     const dispatch = useDispatch()
     const position = useSelector(state => state.position.position)
-    const polygonPoints = useSelector(state => state.polygonPoint.points)
-    const draw = useSelector(state => state.polygonPoint.draw)
+    const polygonPoints = useSelector(state => state.mapPoint.points)
+    const isDraw = useSelector(state => state.mapPoint.draw)
+    const isStart = useSelector(state => state.mapPoint.startPoint)
+    const [startPlace, setStartPlace] = useState()
 
-    const polygonRef = useRef()
     const mapRef = useRef()
 
     const setPolygonPoint = e => {
-        if (!draw) return
+        if (!isDraw && !isStart) return
 
         const lat = e.get('coords')[0]
         const lan = e.get('coords')[1]
 
-        dispatch(addPoint([lat, lan]))
+        if(isDraw) {
+            dispatch(addPoint([lat, lan]))
+        } else {
+            setStartPlace([lat, lan])
+        }
     }
 
     const getPolygon = useCallback(() => {
@@ -37,6 +42,13 @@ export const CastomMap = () => {
             />)
     }, [polygonPoints])
 
+    const getPlacemark = useCallback(() => {
+        return (
+            <Placemark
+                geometry={startPlace}
+            />)
+    }, [startPlace])
+
     return <Map
         instanceRef={mapRef}
         width={'100%'}
@@ -46,8 +58,6 @@ export const CastomMap = () => {
         onClick={setPolygonPoint}
     >
         {getPolygon()}
-        <CastPolygon ref={polygonRef} />
+        {getPlacemark()}
     </Map>
 }
-
-const CastPolygon = styled.div``

@@ -2,7 +2,7 @@ import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import styled from 'styled-components'
 import { Colors } from '../../assets/theme/Colors'
-import { addInputData } from '../../Slices/calculateDataSlise'
+import { addInputData } from '../../Slices/calculateDataSlice'
 import { INPUT_DATA } from '../../constants'
 
 export const InputForm = () => {

@@ -1,14 +1,14 @@
-import { configureStore } from '@reduxjs/toolkit';
-import themeReducer from './Slices/themeSlice'
-import positionReduser from './Slices/positionSlise';
-import polygonPointReduser from './Slices/polygonPointSlise';
-import calculateDataReduser from './Slices/calculateDataSlise';
+import { configureStore } from "@reduxjs/toolkit";
+import themeReducer from "./Slices/themeSlice";
+import positionReducer from "./Slices/positionSlice";
+import mapPointReducer from "./Slices/mapPointSlice";
+import calculateDataReducer from "./Slices/calculateDataSlice";
 
 export const store = configureStore({
   reducer: {
     theme: themeReducer,
-    position: positionReduser,
-    polygonPoint: polygonPointReduser,
-    calculate: calculateDataReduser,
+    position: positionReducer,
+    mapPoint: mapPointReducer,
+    calculate: calculateDataReducer,
   },
 });
