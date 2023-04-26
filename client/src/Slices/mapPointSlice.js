@@ -4,6 +4,7 @@ const initialState = {
   points: [],
   draw: false,
   startPoint: false,
+  drawingPath: false,
 };
 
 export const mapPointSlice = createSlice({
@@ -24,9 +25,17 @@ export const mapPointSlice = createSlice({
       state.draw = false;
       state.startPoint = !state.startPoint;
     },
+    onDrawingPath: (state, action) => {
+      state.drawingPath = !state.drawingPath;
+    },
   },
 });
 
-export const { addPoint, onCancelLastPoint, onDraw, onAddStartPoint } =
-  mapPointSlice.actions;
+export const {
+  addPoint,
+  onCancelLastPoint,
+  onDraw,
+  onAddStartPoint,
+  onDrawingPath,
+} = mapPointSlice.actions;
 export default mapPointSlice.reducer;

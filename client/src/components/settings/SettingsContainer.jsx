@@ -6,7 +6,7 @@ import { PolygonButton } from './PolygonButton';
 
 export const SettingsContainer = () => {
   const isDark = useSelector(state => state.theme.isDark)
-  const [position, setPosition] = useState(0)
+  const [position, setPosition] = useState(20)
 
   const onChangeSettingsPosition = () =>{
     position? setPosition(0) : setPosition(-185)
@@ -22,9 +22,8 @@ export const SettingsContainer = () => {
 const SettingsWrapper = styled.div`
   position: absolute;
   top: 60px;
-  right: ${p => p.position || 0}px;
+  right: ${p => p.position || 20}px;
 
-  height: 200px;
   width: 200px;
 
   display: flex;
@@ -34,8 +33,8 @@ const SettingsWrapper = styled.div`
 `
 
 const Arrow = styled.button`
-  width: 25px;
-  height: 70%;
+  width: 5%;
+  height: 100px;
   background-color: ${p => p.isDark ? Colors.DARK_BUTTON : Colors.LIGHT_BUTTON};
   border-radius: 5px;
 `
