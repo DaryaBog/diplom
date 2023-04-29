@@ -7,6 +7,7 @@ import { fileURLToPath } from 'url'
 import cors from 'cors'
 import bodyParser from 'body-parser'
 import CalculateRouter from './modules/routes/Calculate.js'
+import PolygoneRouter from './modules/routes/PolygonData.js'
 
 const app = express()
 const PORT = process.env.PORT || 8081
@@ -18,6 +19,7 @@ const __dirname = path.dirname(__filename)
 app.use('/static', express.static(path.join(__dirname, 'public')))
 app.use(cors())
 app.use(CalculateRouter)
+app.use(PolygoneRouter)
 
 async function startServer() {
     try {
