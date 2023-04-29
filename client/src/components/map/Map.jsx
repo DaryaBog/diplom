@@ -1,25 +1,60 @@
-import React, { useCallback, useRef } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Map, Polygon } from '@pbe/react-yandex-maps'
-import styled from 'styled-components'
-import { addPoint } from '../../Slices/polygonPointSlise'
+import { Map, Polygon, Placemark } from '@pbe/react-yandex-maps'
+import { addPoint } from '../../Slices/mapPointSlice'
+import { api } from '../../api'
+
+import osmtogeojson from 'osmtogeojson';
+import * as turf from "@turf/turf";
 
 export const CastomMap = () => {
     const dispatch = useDispatch()
     const position = useSelector(state => state.position.position)
-    const polygonPoints = useSelector(state => state.polygonPoint.points)
-    const draw = useSelector(state => state.polygonPoint.draw)
+    const polygonPoints = useSelector(state => state.mapPoint.points)
+    const isDraw = useSelector(state => state.mapPoint.draw)
+    const isStart = useSelector(state => state.mapPoint.startPoint)
+    const isDrawingPath = useSelector(state => state.mapPoint.drawingPath)
+    const [startPlace, setStartPlace] = useState()
+    const [dataForPath, setDataForPath] = useState({polygon: [], startPoint: startPlace})
 
-    const polygonRef = useRef()
     const mapRef = useRef()
 
+    const [intersectionPoints, setIntersectionPoints] = useState([]);
+
+    useEffect(()=>{
+        if(!isDrawingPath) return
+        // api.getPath(dataForPath)
+        console.log('aaaaaaaaa')
+        queryOSMData();
+    },[isDrawingPath, dataForPath])
+    ////////////===========////////////
+    const queryOSMData = async () => {
+        const polygon = [...dataForPath.polygon, dataForPath.polygon[0]];
+
+        const overpassUrl = 'https://overpass-api.de/api/interpreter';
+        const overpassQuery = `[out:json][timeout:25];(way["highway"](${polygon.toGeoJSON().geometry.coordinates.flat().join(',')});node(w););out body;>;out skel qt;`;
+        const response = await fetch(`${overpassUrl}?data=${encodeURIComponent(overpassQuery)}`);
+        const data = await response.json();
+        const geojson = osmtogeojson(data);
+        const intersectionPoints = turf.pointsWithinPolygon(geojson, polygon.toGeoJSON());
+        setIntersectionPoints(intersectionPoints);
+      };
+    
+    ////////////===========////////////
     const setPolygonPoint = e => {
-        if (!draw) return
+        if (!isDraw && !isStart) return
 
         const lat = e.get('coords')[0]
         const lan = e.get('coords')[1]
 
-        dispatch(addPoint([lat, lan]))
+        if(isDraw) {
+            dataForPath.polygon.push([lat, lan])
+            setDataForPath({...dataForPath, polygon: dataForPath.polygon})
+            dispatch(addPoint([lat, lan]))
+        } else {
+            setDataForPath({...dataForPath, startPoint: [lat, lan]})
+            setStartPlace([lat, lan])
+        }
     }
 
     const getPolygon = useCallback(() => {
@@ -37,6 +72,13 @@ export const CastomMap = () => {
             />)
     }, [polygonPoints])
 
+    const getPlacemark = useCallback(() => {
+        return (
+            <Placemark
+                geometry={startPlace}
+            />)
+    }, [startPlace])
+
     return <Map
         instanceRef={mapRef}
         width={'100%'}
@@ -46,8 +88,6 @@ export const CastomMap = () => {
         onClick={setPolygonPoint}
     >
         {getPolygon()}
-        <CastPolygon ref={polygonRef} />
+        {getPlacemark()}
     </Map>
 }
-
-const CastPolygon = styled.div``

@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import styled from 'styled-components'
 import { Colors } from '../../assets/theme/Colors'
-import { changePosition } from '../../Slices/positionSlise'
+import { changePosition } from '../../Slices/positionSlice'
 import { api } from '../../api'
 
 export const Search = () => {
@@ -32,17 +32,19 @@ width: 50%;
 height: 50px;
 `
 
-const SearchButton = styled.div`
+const SearchButton = styled.button`
 width: 100px;
 height: 30px;
 margin: 15px;
 text-align: center;
 color: ${p => p.isDark ? Colors.WHITE : Colors.LIGHT_BORDER};
 background: ${p => p.isDark ? Colors.DARK_BUTTON : Colors.LIGHT_BUTTON};
+border-radius: 5px;
 `
 
 const SearchInput = styled.input`
 width: 400px;
 height: 30px;
 background: ${p => p.isDark ? Colors.DARK_BUTTON : Colors.LIGHT_BUTTON};
+border-radius: 5px;
 `
