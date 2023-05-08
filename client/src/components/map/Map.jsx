@@ -4,8 +4,8 @@ import { Map, Polygon, Placemark } from '@pbe/react-yandex-maps'
 import { addPoint } from '../../Slices/mapPointSlice'
 import { api } from '../../api'
 
-import osmtogeojson from 'osmtogeojson';
 import * as turf from "@turf/turf";
+import { getPolygonPointForQuery } from '../../helpers/getPolygonForQuery'
 
 export const CastomMap = () => {
     const dispatch = useDispatch()
@@ -15,44 +15,37 @@ export const CastomMap = () => {
     const isStart = useSelector(state => state.mapPoint.startPoint)
     const isDrawingPath = useSelector(state => state.mapPoint.drawingPath)
     const [startPlace, setStartPlace] = useState()
-    const [dataForPath, setDataForPath] = useState({polygon: [], startPoint: startPlace})
+    const [dataForPath, setDataForPath] = useState({ polygon: [], startPoint: startPlace })
 
     const mapRef = useRef()
 
     const [intersectionPoints, setIntersectionPoints] = useState([]);
 
-    useEffect(()=>{
-        if(!isDrawingPath) return
-        // api.getPath(dataForPath)
-        console.log('aaaaaaaaa')
+    useEffect(() => {
+        if (!isDrawingPath) return
         queryOSMData();
-    },[isDrawingPath, dataForPath])
-    ////////////===========////////////
-    const queryOSMData = async () => {
-        const polygon = [...dataForPath.polygon, dataForPath.polygon[0]];
+    }, [isDrawingPath, dataForPath])
 
-        const overpassUrl = 'https://overpass-api.de/api/interpreter';
-        const overpassQuery = `[out:json][timeout:25];(way["highway"](${polygon.toGeoJSON().geometry.coordinates.flat().join(',')});node(w););out body;>;out skel qt;`;
-        const response = await fetch(`${overpassUrl}?data=${encodeURIComponent(overpassQuery)}`);
-        const data = await response.json();
-        const geojson = osmtogeojson(data);
-        const intersectionPoints = turf.pointsWithinPolygon(geojson, polygon.toGeoJSON());
-        setIntersectionPoints(intersectionPoints);
-      };
-    
-    ////////////===========////////////
+    const queryOSMData = async () => {
+        if (!dataForPath?.polygon.length) return
+
+        const geoPolygon = getPolygonPointForQuery(dataForPath.polygon)
+        const inGeojsonArray = await api.getIntersectionOfStreetsInPolygon(geoPolygon)
+        setIntersectionPoints(inGeojsonArray);
+    };
+
     const setPolygonPoint = e => {
         if (!isDraw && !isStart) return
 
         const lat = e.get('coords')[0]
         const lan = e.get('coords')[1]
 
-        if(isDraw) {
+        if (isDraw) {
             dataForPath.polygon.push([lat, lan])
-            setDataForPath({...dataForPath, polygon: dataForPath.polygon})
+            setDataForPath({ ...dataForPath, polygon: dataForPath.polygon })
             dispatch(addPoint([lat, lan]))
         } else {
-            setDataForPath({...dataForPath, startPoint: [lat, lan]})
+            setDataForPath({ ...dataForPath, startPoint: [lat, lan] })
             setStartPlace([lat, lan])
         }
     }
@@ -79,6 +72,14 @@ export const CastomMap = () => {
             />)
     }, [startPlace])
 
+    const getAllPlace = (item, index) => {
+        return (
+            <Placemark
+                geometry={[item[1], item[0]]}
+                key={index}
+            />)
+    }
+
     return <Map
         instanceRef={mapRef}
         width={'100%'}
@@ -89,5 +90,6 @@ export const CastomMap = () => {
     >
         {getPolygon()}
         {getPlacemark()}
+        {intersectionPoints?.map((item, index) => getAllPlace(item, index))}
     </Map>
 }
