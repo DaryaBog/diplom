@@ -35,3 +35,7 @@ export const INPUT_DATA = [
     text: "Длина выбранной трубы:",
   },
 ];
+
+export const MAX_DICTANCE = 0.4
+
+export const MIN_DICTANCE = 0.1
