@@ -41,7 +41,36 @@ export class api {
         });
     }
 
-    static getIntersectionOfStreetsInPolygon({ polygon, startPlace }) {
+    static getPathInPolygon({ polygon, startPlace, intersections }) {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const polygonPointsForQuery = getPolygonPointForQuery(polygon)
+                // get array of streets
+                const overpassUrl = 'https://overpass-api.de/api/interpreter'
+                const overpassQueryStreets = `[out:json][timeout:25];
+                way(poly:"${polygonPointsForQuery}")["highway"~"^(trunk|primary|secondary|tertiary|unclassified|residential)$"]->.streets;
+                .streets out geom;`
+                const responSetreets = await fetch(`${overpassUrl}?data=${encodeURIComponent(overpassQueryStreets)}`)
+                const dataStreets = osmtogeojson(await responSetreets.json())
+                // get path
+                const polylinePoints = [startPlace]
+
+                const lines = getLine(polygon)
+
+                const farLine = getFarLine(lines, startPlace, MAX_DICTANCE)
+                const nearestLine = getNearestLine(lines, startPlace, farLine, MAX_DICTANCE)
+                const line = getPath(polygon, intersections, farLine, startPlace, startPlace, polylinePoints, lines, farLine, nearestLine, dataStreets.features)
+
+                resolve({ line: line })
+            } catch (error) {
+                console.log('error in getCalculateResult', error)
+                reject(error)
+            }
+        })
+    }
+
+
+    static getIntersectionOfStreetsInPolygon({ polygon }) {
         return new Promise(async (resolve, reject) => {
             try {
                 const polygonPointsForQuery = getPolygonPointForQuery(polygon)
@@ -62,41 +91,20 @@ export class api {
                 
                 .intersections out geom;`
 
-                const overpassQueryStreets = `[out:json][timeout:25];
-        
-                way(poly:"${polygonPointsForQuery}")["highway"~"^(trunk|primary|secondary|tertiary|unclassified|residential)$"]->.streets;
-                
-                .streets out geom;`
+                const response = await fetch(`${overpassUrl}?data=${encodeURIComponent(overpassQuery)}`)
 
-                const response = await fetch(`${overpassUrl}?data=${encodeURIComponent(overpassQuery)}`);
-                const responSetreets = await fetch(`${overpassUrl}?data=${encodeURIComponent(overpassQueryStreets)}`);
+                const data = await response.json()
+                const geojson = osmtogeojson(data)
 
-                const data = await response.json();
-                const dataStreets = osmtogeojson(await responSetreets.json());
-
-                // console.log('dataStreets', osmtogeojson(dataStreets))
-
-                const geojson = osmtogeojson(data);
                 const inGeojsonArray = geojson.features.map(item => [item.geometry.coordinates[1], item.geometry.coordinates[0]])
                 // get intersection in poltgon
                 const points = turf.points(inGeojsonArray)
                 const searchWithin = turf.polygon([[...polygon, polygon[0]]])
                 const intersectionInPolygon = turf.pointsWithinPolygon(points, searchWithin).features.map(item => item.geometry.coordinates)
-                intersectionInPolygon.push(startPlace)
-                // get path
-                const polylinePoints = [startPlace]
 
-                const lines = getLine(polygon)
-                console.log('start')
-
-                const farLine = getFarLine(lines, startPlace, MAX_DICTANCE)
-                const nearestLine = getNearestLine(lines, startPlace, farLine, MAX_DICTANCE)
-                const line = getPath(polygon, intersectionInPolygon, startPlace, startPlace, polylinePoints, lines, farLine, nearestLine, dataStreets.features)
-
-                console.log('---------line----------', line)
-                resolve({ intersection: intersectionInPolygon, line: line })
+                resolve({ intersection: intersectionInPolygon })
             } catch (error) {
-                console.log('error in getCalculateResult', error)
+                console.log('error in getIntersections', error)
                 reject(error)
             }
         })

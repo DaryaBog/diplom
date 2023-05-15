@@ -1,11 +1,8 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Map, Polygon, Placemark, ZoomControl, Polyline } from '@pbe/react-yandex-maps'
-import { addPoint } from '../../Slices/mapPointSlice'
+import { addPoint, onAddStartPoint } from '../../Slices/mapPointSlice'
 import { api } from '../../api'
-
-import * as turf from "@turf/turf";
-import { getPolygonPointForQuery } from '../../helpers/getPolygonForQuery'
 
 export const CastomMap = () => {
     const dispatch = useDispatch()
@@ -16,38 +13,49 @@ export const CastomMap = () => {
     const isDrawingPath = useSelector(state => state.mapPoint.drawingPath)
     const [startPlace, setStartPlace] = useState()
     const [dataForPath, setDataForPath] = useState({ polygon: [], startPoint: startPlace })
-
     const mapRef = useRef()
 
     const [intersectionPoints, setIntersectionPoints] = useState([]);
     const [path, setPath] = useState([])
 
     useEffect(() => {
+        if (isStart && dataForPath.polygon.length) {
+            queryIntersections()
+        }
+    }, [isStart, dataForPath])
+
+    useEffect(() => {
         if (!isDrawingPath) return
-        queryOSMData();
+        queryOSMData()
     }, [isDrawingPath, dataForPath])
 
-    const queryOSMData = async () => {
+    const queryIntersections = async () => {
         if (!dataForPath?.polygon.length) return
-        const { intersection, line } = await api.getIntersectionOfStreetsInPolygon({ polygon: dataForPath.polygon, startPlace })
-        setPath(line)
+        const { intersection } = await api.getIntersectionOfStreetsInPolygon({ polygon: dataForPath.polygon })
         setIntersectionPoints(intersection);
-    };
+    }
+
+    const queryOSMData = useCallback(async () => {
+        if (!dataForPath?.polygon.length) return
+        const { line } = await api.getPathInPolygon({ polygon: dataForPath.polygon, startPlace, intersections: intersectionPoints })
+        setPath(line)
+    }, [dataForPath, intersectionPoints, startPlace])
+
+    const setStartPoint = item => {
+        if (!isStart) return
+        setDataForPath({ ...dataForPath, startPoint: item })
+        setStartPlace(item)
+        dispatch(onAddStartPoint())
+    }
 
     const setPolygonPoint = e => {
-        if (!isDraw && !isStart) return
+        if (!isDraw) return
 
         const lat = e.get('coords')[0]
         const lan = e.get('coords')[1]
-
-        if (isDraw) {
-            dataForPath.polygon.push([lat, lan])
-            setDataForPath({ ...dataForPath, polygon: dataForPath.polygon })
-            dispatch(addPoint([lat, lan]))
-        } else {
-            setDataForPath({ ...dataForPath, startPoint: [lat, lan] })
-            setStartPlace([lat, lan])
-        }
+        dataForPath.polygon.push([lat, lan])
+        setDataForPath({ ...dataForPath, polygon: dataForPath.polygon })
+        dispatch(addPoint([lat, lan]))
     }
 
     const getPolygon = useCallback(() => {
@@ -64,7 +72,7 @@ export const CastomMap = () => {
                     strokeStyle: "shortdash",
                 }}
             />)
-    }, [polygonPoints, setPolygonPoint])
+    }, [polygonPoints])
 
     const getPlacemark = useCallback(() => {
         return (
@@ -78,6 +86,7 @@ export const CastomMap = () => {
             <Placemark
                 geometry={item}
                 key={index}
+                onClick={() => setStartPoint(item)}
             />)
     }
 
@@ -104,7 +113,7 @@ export const CastomMap = () => {
         <ZoomControl options={{ float: "right" }} />
         {getPolygon()}
         {getPlacemark()}
-        {/* {intersectionPoints?.map((item, index) => getAllPlace(item, index))} */}
+        {isStart ? intersectionPoints?.map((item, index) => getAllPlace(item, index)) : null}
         {path?.length ? getPath() : null}
     </Map>
 }

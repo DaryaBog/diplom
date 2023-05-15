@@ -29,11 +29,9 @@ export const getFarLine = (lines, startPlace) => {
 }
 
 const getNextFarLine = (lines, nearestLine, farLine) => {
-    console.log('lines', lines, 'farLine', farLine)
     const index = lines.findIndex((line) => ((line.geometry.coordinates.includes(farLine[0]) && !line.geometry.coordinates.includes(farLine[1]))
         || (!line.geometry.coordinates.includes(farLine[0]) && line.geometry.coordinates.includes(farLine[1])))
         && (!line.geometry.coordinates.includes(nearestLine[0]) && !line.geometry.coordinates.includes(nearestLine[1])))
-    console.log('lines.indexOf(farLine)', index)
     return lines[index].geometry.coordinates
 }
 
@@ -71,20 +69,20 @@ const getNearestPointsToStartPoint = ({ intersections, dataStreets, nextStartPla
         const options = { units: 'kilometers' }
         const distanceToPoint = turf.distance(from, to, options);
         let isPath = false
-        const hasStartPoint = (nextStartPlace[0] === startPlace[0] && nextStartPlace[1] === startPlace[1]) || (point[0] === startPlace[0] && point[1] === startPlace[1])
+        if (distanceToPoint < extremalDistance) {
+            streetsOfThisPoint = dataStreets.filter(street => street.geometry.coordinates.find(anyPoint => anyPoint.includes(nextStartPlace[0]) && anyPoint.includes(nextStartPlace[1])))
+            streetsOfNextPoint = dataStreets.filter(street => street.geometry.coordinates.find(anyPoint => anyPoint.includes(point[0]) && anyPoint.includes(point[1])))
 
-        streetsOfThisPoint = dataStreets.filter(street => street.geometry.coordinates.find(anyPoint => anyPoint.includes(nextStartPlace[0]) && anyPoint.includes(nextStartPlace[1])))
-        streetsOfNextPoint = dataStreets.filter(street => street.geometry.coordinates.find(anyPoint => anyPoint.includes(point[0]) && anyPoint.includes(point[1])))
-
-        for (let i = 0; i < streetsOfThisPoint.length; i++) {
-            for (let j = 0; j < streetsOfNextPoint.length; j++) {
-                isPath = streetsOfThisPoint[i].properties.name === streetsOfNextPoint[j].properties.name
+            for (let i = 0; i < streetsOfThisPoint.length; i++) {
+                for (let j = 0; j < streetsOfNextPoint.length; j++) {
+                    isPath = streetsOfThisPoint[i].properties.name === streetsOfNextPoint[j].properties.name
+                    if (isPath) break
+                }
                 if (isPath) break
             }
-            if (isPath) break
+            return isPath
         }
-
-        return (isPath || hasStartPoint) && (distanceToPoint < extremalDistance)
+        return false
     })
 
     return nearestPoints
@@ -96,40 +94,85 @@ const getNearestPointsToNearestLine = ({ intersections, nearestLine, extremalDis
         const options = { units: 'kilometers' }
         const distanceToLine = turf.pointToLineDistance(pt, nearestLine, options);
 
-        return distanceToLine < extremalDistanceToLine
+        return distanceToLine < extremalDistanceToLine && distanceToLine > MIN_DICTANCE
     })
 
     return nearestPoints
 }
 
+const getValidPoints = ({ inputPoints, polylinePoints, thisPoint, farLine, lastDistance }) => {
+    const nearestToFarLinePoints = inputPoints.filter(point => {
+        return checkDictanceToFarLine(farLine, point) < lastDistance + 0.05
+    })
+    const newPoints = nearestToFarLinePoints.filter(point => {
+        const line1 = turf.lineString([thisPoint, point])
+        let intersectCount = 0
+        for (let i = 0; i < polylinePoints.length; i++) {
+            const line2 = i + 1 === polylinePoints.length ? turf.lineString([polylinePoints[i], polylinePoints[0]]) : turf.lineString([polylinePoints[i], polylinePoints[i + 1]])
+            const intersects = turf.booleanIntersects(line1, line2)
+            const isLastLine = i + 1 === polylinePoints.length
+                ? (polylinePoints[i].includes(thisPoint[0])
+                    && polylinePoints[i].includes(thisPoint[1]))
+                || (polylinePoints[0].includes(thisPoint[0])
+                    && polylinePoints[0].includes(thisPoint[1]))
+                : (polylinePoints[i].includes(thisPoint[0])
+                    && polylinePoints[i].includes(thisPoint[1]))
+                || (polylinePoints[i + 1].includes(thisPoint[0])
+                    && polylinePoints[i + 1].includes(thisPoint[1]))
+
+            if (intersects && !isLastLine) intersectCount++
+        }
+        return !intersectCount
+    })
+    return newPoints
+}
+
+const checkFirstFarLine = (farLine, firstFarLine) => {
+    return (farLine.includes(firstFarLine[0]) && farLine.includes(firstFarLine[1]))
+}
+
 const getNextPoints = (prop) => {
-    if (prop.extremalDistanceToLine > 1) {
+    if (prop.extremalDistance > 1) {
         console.log('Путь зашел в тупик, переместите стартовую точку!')
         return []
     }
     const nearestPointsToStartPoint = getNearestPointsToStartPoint(prop)
     const nearestPointsToNearestLine = getNearestPointsToNearestLine(prop)
 
-    const generalsPoints = nearestPointsToNearestLine.filter(point => nearestPointsToStartPoint.includes(point))
-    const nextPoints = generalsPoints.filter(point => !point.includes(prop.startPlace[0]) && !point.includes(prop.startPlace[1]))
+    let nextPointsWithoutIntersections = []
 
-    // if (!nextPoints.length) {
-    //     const newExtremalDistance = prop.extremalDistanceToLine + 0.1
-    //     return getNextPoints({ ...prop, extremalDistanceToLine: newExtremalDistance })
-    // }
-    return nextPoints
+    const generalsPoints = nearestPointsToStartPoint.filter(point => nearestPointsToNearestLine.includes(point))
+    const nextPoints = prop.polylinePoints.length > 8 ? generalsPoints : generalsPoints.filter(point => !point.includes(prop.startPlace[0]) && !point.includes(prop.startPlace[1]))
+    // проверка на пересечение уже существующих линий
+    if (prop.polylinePoints.length) {
+        nextPointsWithoutIntersections = getValidPoints({
+            inputPoints: nextPoints, thisPoint: prop.nextStartPlace, ...prop
+        })
+    }
+
+    if (!nextPointsWithoutIntersections.length || !nextPoints.length) {
+        const newExtremalDistance = prop.extremalDistance + 0.05
+        return getNextPoints({ ...prop, extremalDistance: newExtremalDistance })
+    }
+    return nextPointsWithoutIntersections || nextPoints
 }
 
-export const getPath = (polygon, intersections, startPlace, nextStartPlace, polylinePoints, lines, oldFarLine, oldNearestLine, dataStreets) => {
+export const getPath = (polygon, intersections, firstFarLine, startPlace, nextStartPlace, polylinePoints, lines, oldFarLine, oldNearestLine, dataStreets) => {
     let farLine = oldFarLine
     let nearestLine = oldNearestLine
+    let isEnd = false
+    let nextPoint
 
     const distanceToFarLine = checkDictanceToFarLine(farLine, nextStartPlace)
-    console.log('distanceToFarLine', distanceToFarLine)
+    let newDistanceToFarLine = distanceToFarLine
 
     if (distanceToFarLine <= MAX_DICTANCE) {
         farLine = getNextFarLine(lines, oldNearestLine, oldFarLine)
         nearestLine = oldFarLine
+        newDistanceToFarLine = checkDictanceToFarLine(farLine, nextStartPlace)
+
+        const isFirstFarLine = checkFirstFarLine(farLine, firstFarLine)
+        if (isFirstFarLine) isEnd = true
     }
 
     if (!farLine.length) {
@@ -137,41 +180,42 @@ export const getPath = (polygon, intersections, startPlace, nextStartPlace, poly
         return
     }
 
-    const nextPoints = getNextPoints({
-        intersections,
-        dataStreets,
-        nearestLine,
-        nextStartPlace,
-        startPlace,
-        extremalDistance: MAX_DICTANCE + 0.1,
-        extremalDistanceToLine: MAX_DICTANCE
-    })
-
-    if (!nextPoints.length) return polylinePoints
-
-    const distanceToNextPoints = nextPoints.map(point => {
-        const pt = turf.point(point)
-        const options = { units: 'kilometers' }
-        const distanceToFarLine = turf.pointToLineDistance(pt, farLine, options);
-        return distanceToFarLine
-    })
-
-    const indexMaxNextPoint = distanceToNextPoints.indexOf(Math.min(...distanceToNextPoints))
-    const nextNextPoint = nextPoints[indexMaxNextPoint]
-    console.log('nextNextPoint && startPlace', nextNextPoint, startPlace)
-    let nextPoint
-    if (nextPoints.includes(startPlace) && polylinePoints.length > 10) {
+    if (isEnd) {
         nextPoint = startPlace
     } else {
-        nextPoint = nextNextPoint
+        const nextPoints = getNextPoints({
+            polylinePoints,
+            intersections,
+            dataStreets,
+            nearestLine,
+            nextStartPlace,
+            startPlace,
+            extremalDistance: MAX_DICTANCE,
+            extremalDistanceToLine: MAX_DICTANCE,
+            farLine,
+            lastDistance: newDistanceToFarLine,
+        })
+
+        if (!nextPoints.length) {
+            return polylinePoints
+        }
+
+        const distanceToNextPoints = nextPoints.map(point => {
+            const pt = turf.point(point)
+            const options = { units: 'kilometers' }
+            const distanceToFarLine = turf.pointToLineDistance(pt, farLine, options);
+            return distanceToFarLine
+        })
+
+        const indexMaxNextPoint = distanceToNextPoints.indexOf(Math.min(...distanceToNextPoints))
+        nextPoint = nextPoints[indexMaxNextPoint]
     }
+
     polylinePoints.push(nextPoint)
 
     if (!nextPoint.includes(startPlace[0]) && !nextPoint.includes(startPlace[1])) {
-        console.log('build')
         const newIntersections = intersections.filter(point => point[0] !== nextPoint[0] && point[1] !== nextPoint[1])
-        getPath(polygon, newIntersections, startPlace, nextPoint, polylinePoints, lines, farLine, nearestLine, dataStreets)
+        getPath(polygon, newIntersections, firstFarLine, startPlace, nextPoint, polylinePoints, lines, farLine, nearestLine, dataStreets)
     }
-    console.log('done', polylinePoints)
     return polylinePoints
 }
