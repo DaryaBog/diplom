@@ -24,6 +24,7 @@ export const PolygonButton = () => {
         dispatch(onDrawingPath())
     }
 
+
     return <ButtonWrapper isDark={isDark}>
         <SettingsButton onClick={onDrawBorder} isDark={isDark}> Определить границы населенного пункта</SettingsButton>
         <SettingsButton onClick={onCancel} isDark={isDark}> Отменить последнюю точку границы</SettingsButton>
