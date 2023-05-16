@@ -37,7 +37,7 @@ export const CastomMap = () => {
 
     const queryOSMData = useCallback(async () => {
         if (!dataForPath?.polygon.length) return
-        const { line } = await api.getPathInPolygon({ polygon: dataForPath.polygon, startPlace, intersections: intersectionPoints })
+        const { line } = await api.getPathInPolygon({ polygon: polygonPoints, startPlace, intersections: intersectionPoints, maxDistance: 0.4, minDistance: 0.1 })
         setPath(line)
     }, [dataForPath, intersectionPoints, startPlace])
 
@@ -53,10 +53,13 @@ export const CastomMap = () => {
 
         const lat = e.get('coords')[0]
         const lan = e.get('coords')[1]
-        dataForPath.polygon.push([lat, lan])
-        setDataForPath({ ...dataForPath, polygon: dataForPath.polygon })
+
         dispatch(addPoint([lat, lan]))
     }
+
+    useEffect(() => {
+        setDataForPath({ ...dataForPath, polygon: polygonPoints })
+    }, [polygonPoints])
 
     const getPolygon = useCallback(() => {
         return (
@@ -64,7 +67,6 @@ export const CastomMap = () => {
                 onClick={setPolygonPoint}
                 geometry={[polygonPoints]}
                 options={{
-                    editorDrawingCursor: "crosshair",
                     fillColor: "#00FF00",
                     strokeColor: "#0000FF",
                     opacity: 0.5,

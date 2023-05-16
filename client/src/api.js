@@ -1,6 +1,6 @@
 import osmtogeojson from "osmtogeojson";
 import { MAX_DICTANCE, URL_GEOCODE, URL_SERVER } from "./constants";
-import { getQueryCalculate } from "./helpers/queryCalculate";
+import { getQueryCalculate, getQueryPath } from "./helpers/queryParam";
 import * as turf from "@turf/turf";
 import { getPolygonPointForQuery } from "./helpers/getPolygonForQuery";
 import { getFarLine, getLine, getNearestLine, getPath } from "./helpers/searchPath";
@@ -41,7 +41,7 @@ export class api {
         });
     }
 
-    static getPathInPolygon({ polygon, startPlace, intersections }) {
+    static getPathInPolygon({ polygon, startPlace, intersections, maxDistance, minDistance }) {
         return new Promise(async (resolve, reject) => {
             try {
                 const polygonPointsForQuery = getPolygonPointForQuery(polygon)
@@ -55,13 +55,28 @@ export class api {
                 // get path
                 const polylinePoints = [startPlace]
 
-                const lines = getLine(polygon)
+                const inputData = {
+                    polygon,
+                    startPlace,
+                    nextStartPlace: startPlace,
+                    polylinePoints,
+                    dataStreets,
+                    maxDistance,
+                    minDistance,
+                }
 
-                const farLine = getFarLine(lines, startPlace, MAX_DICTANCE)
-                const nearestLine = getNearestLine(lines, startPlace, farLine, MAX_DICTANCE)
-                const line = getPath(polygon, intersections, farLine, startPlace, startPlace, polylinePoints, lines, farLine, nearestLine, dataStreets.features)
-
-                resolve({ line: line })
+                await fetch(`${URL_SERVER}/polygon?${getQueryPath(inputData)}`, {
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Access-Control-Allow-Origin": "*",
+                    },
+                })
+                    .then((res) => res.json())
+                    .then((res) => {
+                        console.log("res", res);
+                        resolve(res);
+                    })
+                    .catch((error) => reject(error))
             } catch (error) {
                 console.log('error in getCalculateResult', error)
                 reject(error)

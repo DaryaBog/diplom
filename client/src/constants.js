@@ -1,6 +1,6 @@
 export const URL_GEOCODE =
   "https://geocode-maps.yandex.ru/1.x/?apikey=2fcf50c3-38d1-4cda-a5a9-da7983b01137&format=json&geocode=";
-export const URL_SERVER = "http://localhost:8081";
+export const URL_SERVER = "http://localhost:8080";
 
 export const INPUT_DATA = [
   {
