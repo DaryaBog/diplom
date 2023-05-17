@@ -1,18 +1,8 @@
 import osmtogeojson from "osmtogeojson";
-import { MAX_DICTANCE, URL_GEOCODE, URL_SERVER } from "./constants";
-import {
-  getQueryCalculate,
-  getQueryPath,
-  postQueryPath,
-} from "./helpers/queryParam";
+import { URL_GEOCODE, URL_SERVER } from "./constants";
+import { getQueryCalculate } from "./helpers/queryParam";
 import * as turf from "@turf/turf";
 import { getPolygonPointForQuery } from "./helpers/getPolygonForQuery";
-import {
-  getFarLine,
-  getLine,
-  getNearestLine,
-  getPath,
-} from "./helpers/searchPath";
 
 export class api {
   static getNewPosition(town) {
