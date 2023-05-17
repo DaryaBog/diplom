@@ -1,20 +1,24 @@
 import React from 'react';
 import Modal from 'react-modal';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { Colors } from '../assets/theme/Colors';
+import { onClose } from '../Slices/warningSlice';
 
 export const WarningPopup = () => {
+    const dispatch = useDispatch()
     const isDark = useSelector(state => state.theme.isDark)
+    const isVisible = useSelector(state => state.warning.isVisible)
+    const text = useSelector(state => state.warning.text)
 
     return (
         <Overlay
-            isOpen={true}
+            isOpen={isVisible}
             // onAfterOpen={afterOpenModal}
-            // onRequestClose={closeModal}
-            // style={customStyles}
+            onRequestClose={() => dispatch(onClose())}
             contentLabel="Example Modal"
             isDark={isDark}
+            ariaHideApp={false}
             style={{
                 overlay: {
                     position: 'fixed',
@@ -38,6 +42,21 @@ export const WarningPopup = () => {
                 }
             }}
         >
+            {text.title ? (
+                <>
+                    <Title isDark={isDark}>{text.title}</Title>
+                    <SubTitle isDark={isDark}> {text.subTitle}</SubTitle>
+                </>
+            ) : <DefaultModal />}
+            <OkButton isDark={isDark} onClick={() => dispatch(onClose())}>Ok</OkButton>
+        </Overlay >
+    )
+}
+
+const DefaultModal = () => {
+    const isDark = useSelector(state => state.theme.isDark)
+    return (
+        <>
             <Title isDark={isDark}>Проектирование трассы питьевого водопровода</Title>
             <ListItem isDark={isDark}>1. Найдите населенный пункт, для которого Вы хотите спроектировать сотовую систему экологического питьевого водоснабжения; </ListItem>
             <ListItem isDark={isDark}>2. Задайте 4 границы населенного пункта, с учетом того, что план трассы будет строиться в пределах указанной пешеходной доступности и не ближе указанного минимального расстояния до границы;</ListItem>
@@ -45,8 +64,7 @@ export const WarningPopup = () => {
             <ListItem isDark={isDark}>4. Нажмите "Построить план трассы";</ListItem>
             <ListItem isDark={isDark}>5. Заполните поля для инженерных рассчетов и нажмите "Рассчетать";</ListItem>
             <SubTitle isDark={isDark}> Готово! Осталось только сохранить &#127881;</SubTitle>
-            <OkButton isDark={isDark}>Ok</OkButton>
-        </Overlay >
+        </>
     )
 }
 

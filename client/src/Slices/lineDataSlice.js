@@ -12,6 +12,11 @@ const initialState = {
   firstMaxDistance: 0.4,
   secondMaxDistance: 0.6,
   thirdMaxDistance: 0.8,
+  length: {
+    firstLength: 0,
+    secondLength: 0,
+    thirdLength: 0,
+  }
 };
 
 export const linesSlice = createSlice({
@@ -48,6 +53,10 @@ export const linesSlice = createSlice({
     changeThirdMaxDistance: (state, action) => {
       state.thirdMaxDistance = action.payload.thirdMaxDistance;
     },
+
+    addLength: (state, action) => {
+      state.length = action.payload;
+    },
   },
 });
 
@@ -61,5 +70,6 @@ export const {
   changeFirstMaxDistance,
   changeSecondMaxDistance,
   changeThirdMaxDistance,
+  addLength,
 } = linesSlice.actions;
 export default linesSlice.reducer;
