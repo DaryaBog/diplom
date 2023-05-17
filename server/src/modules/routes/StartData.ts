@@ -3,6 +3,6 @@ import { GetDataForStartDrow } from '../Controllers/dataForPath.js'
 
 const StartRouter = Router()
 
-StartRouter.get('/polygon', GetDataForStartDrow)
+StartRouter.post('/polygon', GetDataForStartDrow)
 
 export default StartRouter

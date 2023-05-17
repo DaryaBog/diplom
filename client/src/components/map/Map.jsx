@@ -37,7 +37,7 @@ export const CastomMap = () => {
 
     const queryOSMData = useCallback(async () => {
         if (!dataForPath?.polygon.length) return
-        const { line } = await api.getPathInPolygon({ polygon: polygonPoints, startPlace, intersections: intersectionPoints, maxDistance: 0.4, minDistance: 0.1 })
+        const line = await api.getPathInPolygon({ polygon: polygonPoints, startPlace, intersections: intersectionPoints, maxDistance: 0.4, minDistance: 0.1 })
         setPath(line)
     }, [dataForPath, intersectionPoints, startPlace])
 

@@ -13,7 +13,7 @@ export const getLine = (polygon: any) => {
     return lines
 }
 
-export const getFarLine = (lines: number[][], startPlace: number[][], maxDistance: number) => {
+export const getFarLine = (lines: any[][], startPlace: number[][], maxDistance: number) => {
     const pt: any = turf.point(startPlace)
     const distance: number[] = []
     for (let i = 0; i < lines.length; i++) {
@@ -27,12 +27,25 @@ export const getFarLine = (lines: number[][], startPlace: number[][], maxDistanc
     return farLine.geometry.coordinates
 }
 
-export const getNearestLine = (lines: any[][], farLine: number[][], nearestLine: number[][]) => {
-    const index: any = lines.findIndex((line: any) => ((line.geometry.coordinates.includes(farLine[0]) && !line.geometry.coordinates.includes(farLine[1]))
+const lineFilter = (prop:any) => {
+    const { lines, farLine } = prop
+    return lines.filter((line: any) => (line.geometry.coordinates.includes(farLine[0]) && !line.geometry.coordinates.includes(farLine[1]))
         || (!line.geometry.coordinates.includes(farLine[0]) && line.geometry.coordinates.includes(farLine[1])))
-        && (!line.geometry.coordinates.includes(nearestLine[0]) && !line.geometry.coordinates.includes(nearestLine[1])))
-    const newNerestLine: any = lines[index]
-    return newNerestLine.geometry.coordinates
+}
+
+export const getNearestLine = (lines: number[][], startPlace: number[], farLine: number[][]) => {
+    const pt = turf.point(startPlace)
+    const distance = []
+
+    const someLines = lineFilter({ lines, farLine })
+
+    for (let i = 0; i < someLines.length; i++) {
+        distance.push(turf.pointToLineDistance(pt, someLines[i], { units: 'kilometers' }))
+    }
+
+    const indexNearestLine = distance.indexOf(Math.min(...distance))
+    const nearestLine = someLines[indexNearestLine]
+    return nearestLine.geometry.coordinates
 }
 
 export const getNextFarLine = (lines: any[][], nearestLine: number[][], farLine: number[][]) => {

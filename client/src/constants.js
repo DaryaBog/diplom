@@ -1,6 +1,6 @@
 export const URL_GEOCODE =
   "https://geocode-maps.yandex.ru/1.x/?apikey=2fcf50c3-38d1-4cda-a5a9-da7983b01137&format=json&geocode=";
-export const URL_SERVER = "http://localhost:8080";
+export const URL_SERVER = "http://localhost:8081";
 
 export const INPUT_DATA = [
   {
@@ -36,6 +36,6 @@ export const INPUT_DATA = [
   },
 ];
 
-export const MAX_DICTANCE = 0.4
+export const MAX_DICTANCE = 0.4;
 
-export const MIN_DICTANCE = 0.1
+export const MIN_DICTANCE = 0.1;
