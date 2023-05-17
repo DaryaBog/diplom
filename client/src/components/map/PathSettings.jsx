@@ -48,11 +48,11 @@ export const PathSettings = () => {
             </InputWrapper>
             <InputWrapper>
                 <Label isDark={isDark}> Минимальное расстояние до границы: </Label>
-                <Input isDark={isDark} onChange={(e) => setMinDistanceFirst(e.target.value)} />
+                <Input isDark={isDark} value='0.1' onChange={(e) => setMinDistanceFirst(e.target.value)} />
             </InputWrapper>
             <InputWrapper>
                 <Label isDark={isDark}> Шаговая доступность: </Label>
-                <Input isDark={isDark} onChange={(e) => setMaxDistanceFirst(e.target.value)} />
+                <Input isDark={isDark} value='0.4' onChange={(e) => setMaxDistanceFirst(e.target.value)} />
             </InputWrapper>
         </BlockWrapper>
         <BlockWrapper isDark={isDark}>
@@ -64,11 +64,11 @@ export const PathSettings = () => {
             </InputWrapper>
             <InputWrapper>
                 <Label isDark={isDark}> Минимальное расстояние до границы: </Label>
-                <Input isDark={isDark} onChange={(e) => setMinDistanceSecond(e.target.value)} />
+                <Input isDark={isDark} value='0.1' onChange={(e) => setMinDistanceSecond(e.target.value)} />
             </InputWrapper>
             <InputWrapper>
                 <Label isDark={isDark}> Шаговая доступность: </Label>
-                <Input isDark={isDark} onChange={(e) => setMaxDistanceSecond(e.target.value)} />
+                <Input isDark={isDark} value='0.6' onChange={(e) => setMaxDistanceSecond(e.target.value)} />
             </InputWrapper>
         </BlockWrapper>
         <BlockWrapper isDark={isDark}>
@@ -80,11 +80,11 @@ export const PathSettings = () => {
             </InputWrapper>
             <InputWrapper>
                 <Label isDark={isDark}> Минимальное расстояние до границы: </Label>
-                <Input isDark={isDark} onChange={(e) => setMinDistanceThird(e.target.value)} />
+                <Input isDark={isDark} value='0.1' onChange={(e) => setMinDistanceThird(e.target.value)} />
             </InputWrapper>
             <InputWrapper>
                 <Label isDark={isDark}> Шаговая доступность: </Label>
-                <Input isDark={isDark} onChange={(e) => setMaxDistanceThird(e.target.value)} />
+                <Input isDark={isDark} value='0.8' onChange={(e) => setMaxDistanceThird(e.target.value)} />
             </InputWrapper>
         </BlockWrapper>
         </FormWrapper>
