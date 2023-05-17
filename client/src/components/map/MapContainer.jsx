@@ -4,16 +4,20 @@ import styled from 'styled-components'
 import { Colors } from '../../assets/theme/Colors'
 import { YMaps } from '@pbe/react-yandex-maps'
 import { CastomMap } from './Map';
+import { PathSettings } from './PathSettings'
 
 export const MapContainer = () => {
     const isDark = useSelector(state => state.theme.isDark)
 
     return (
-        <YMaps isDark={isDark}>
-            <ContainerMap isDark={isDark}>
-                <CastomMap />
-            </ContainerMap>
-        </YMaps>
+        <>
+            <YMaps isDark={isDark}>
+                <ContainerMap isDark={isDark}>
+                    <CastomMap />
+                </ContainerMap>
+            </YMaps>
+            <PathSettings/>
+        </>
     );
 }
 

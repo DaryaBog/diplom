@@ -5,7 +5,7 @@ import { checkDictanceToFarLine, checkFirstFarLine } from "./checkForPath/CheckF
 import { getNextPoints } from "./GetNextPoints.js"
 
 export const getPath = (prop: any) => {
-    const { polygon, intersections, firstFarLine, startPlace, nextStartPlace, polylinePoints, lines, oldFarLine, oldNearestLine, dataStreets, maxDistance } = prop
+    const { polygon, intersections, firstFarLine, startPlace, nextStartPlace, polylinePoints, lines, oldFarLine, oldNearestLine, dataStreets, maxDistance, minDistance } = prop
     let farLine: number[][] = oldFarLine
     let nearestLine = oldNearestLine
     let isEnd: boolean = false
@@ -42,6 +42,7 @@ export const getPath = (prop: any) => {
             extremalDistanceToLine: maxDistance,
             farLine,
             lastDistance: newDistanceToFarLine,
+            minDistance
         })
 
         if (!nextPoints.length) {
@@ -63,7 +64,7 @@ export const getPath = (prop: any) => {
 
     if (!nextPoint.includes(startPlace[0]) && !nextPoint.includes(startPlace[1])) {
         const newIntersections = intersections.filter((point: number[]) => point[0] !== nextPoint[0] && point[1] !== nextPoint[1])
-        getPath({ polygon, intersections: newIntersections, firstFarLine, startPlace, nextStartPlace: nextPoint, polylinePoints, lines, oldFarLine: farLine, oldNearestLine: nearestLine, dataStreets, maxDistance })
+        getPath({ polygon, intersections: newIntersections, firstFarLine, startPlace, nextStartPlace: nextPoint, polylinePoints, lines, oldFarLine: farLine, oldNearestLine: nearestLine, dataStreets, maxDistance, minDistance })
     }
     return polylinePoints
 }

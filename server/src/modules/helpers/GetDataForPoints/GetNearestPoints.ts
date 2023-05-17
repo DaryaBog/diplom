@@ -31,13 +31,13 @@ export const getNearestPointsToStartPoint = (prop: any) => {
 }
 
 export const getNearestPointsToNearestLine = (prop: any) => {
-    const { intersections, nearestLine, extremalDistanceToLine } = prop
+    const { intersections, nearestLine, extremalDistanceToLine, minDistance } = prop
     const nearestPoints = intersections.filter((point: number[]) => {
         const pt = turf.point(point)
         const options = { units: 'kilometers' }
         const distanceToLine = turf.pointToLineDistance(pt, nearestLine, options);
 
-        return distanceToLine < extremalDistanceToLine && distanceToLine > 0.1
+        return distanceToLine < extremalDistanceToLine && distanceToLine > minDistance
     })
 
     return nearestPoints

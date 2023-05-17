@@ -1,19 +1,20 @@
 import React, { useState } from 'react'
 import { useSelector } from 'react-redux';
-import styled, { keyframes } from 'styled-components'
+import styled from 'styled-components'
 import { Colors } from '../../assets/theme/Colors'
 import { PolygonButton } from './PolygonButton';
+import ArrowWhite from '../../assets/arrowWhite.png'
 
 export const SettingsContainer = () => {
   const isDark = useSelector(state => state.theme.isDark)
   const [position, setPosition] = useState(20)
 
   const onChangeSettingsPosition = () =>{
-    position? setPosition(0) : setPosition(-185)
+    position? setPosition(0) : setPosition(-165)
   }
 
   return <SettingsWrapper position={position} isDark={isDark}>
-    <Arrow isDark={isDark} onClick={onChangeSettingsPosition}>c</Arrow>
+    <Arrow isDark={isDark} onClick={onChangeSettingsPosition}><Icon src={ArrowWhite}/></Arrow>
    <PolygonButton/>
   </SettingsWrapper>
 }
@@ -33,9 +34,14 @@ const SettingsWrapper = styled.div`
 `
 
 const Arrow = styled.button`
-  width: 5%;
-  height: 100px;
+  width: 35px;
+  height: 30px;
   background-color: ${p => p.isDark ? Colors.DARK_BUTTON : Colors.LIGHT_BUTTON};
-  border-radius: 5px;
+  border-radius: 50px;
+
 `
 
+const Icon = styled.img`
+  width: 20px;
+  height: 20px;
+`

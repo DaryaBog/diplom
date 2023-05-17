@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Map, Polygon, Placemark, ZoomControl, Polyline } from '@pbe/react-yandex-maps'
 import { addPoint, onAddStartPoint } from '../../Slices/mapPointSlice'
 import { api } from '../../api'
+import { checkLine } from '../../helpers/checkValidLine'
 
 export const CastomMap = () => {
     const dispatch = useDispatch()
@@ -15,8 +16,24 @@ export const CastomMap = () => {
     const [dataForPath, setDataForPath] = useState({ polygon: [], startPoint: startPlace })
     const mapRef = useRef()
 
+    // data for style of path
+    const firstColor = useSelector(state => state.lines.firstColor)
+    const secondColor = useSelector(state => state.lines.secondColor)
+    const thirdColor = useSelector(state => state.lines.thirdColor)
+   
+    const firstMinDistance = useSelector(state => state.lines.firstMinDistance)
+    const secondMinDistance = useSelector(state => state.lines.secondMinDistance)
+    const thirdMinDistance = useSelector(state => state.lines.thirdMinDistance)
+
+    const firstMaxDistance = useSelector(state => state.lines.firstMaxDistance)
+    const secondMaxDistance = useSelector(state => state.lines.secondMaxDistance)
+    const thirdMaxDistance = useSelector(state => state.lines.thirdMaxDistance)
+    //
+
     const [intersectionPoints, setIntersectionPoints] = useState([]);
     const [path, setPath] = useState([])
+    const [redPath, setRedPath] = useState([])
+    const [greenPath, setGreenPath] = useState([])
 
     useEffect(() => {
         if (isStart && dataForPath.polygon.length) {
@@ -37,9 +54,13 @@ export const CastomMap = () => {
 
     const queryOSMData = useCallback(async () => {
         if (!dataForPath?.polygon.length) return
-        const line = await api.getPathInPolygon({ polygon: polygonPoints, startPlace, intersections: intersectionPoints, maxDistance: 0.4, minDistance: 0.1 })
-        setPath(line)
-    }, [dataForPath, intersectionPoints, startPlace])
+        const line = await api.getPathInPolygon({ polygon: polygonPoints, startPlace, intersections: intersectionPoints, maxDistance: firstMaxDistance, minDistance: firstMinDistance })
+        const lineRed = await api.getPathInPolygon({ polygon: polygonPoints, startPlace, intersections: intersectionPoints, maxDistance: secondMaxDistance, minDistance: secondMinDistance })
+        const lineGreen = await api.getPathInPolygon({ polygon: polygonPoints, startPlace, intersections: intersectionPoints, maxDistance: thirdMaxDistance, minDistance: thirdMinDistance})
+        checkLine(line) && setPath(line)
+        checkLine(lineRed) && setRedPath(lineRed)
+        checkLine(lineGreen) && setGreenPath(lineGreen)
+    }, [polygonPoints, dataForPath, intersectionPoints, startPlace])
 
     const setStartPoint = item => {
         if (!isStart) return
@@ -67,8 +88,8 @@ export const CastomMap = () => {
                 onClick={setPolygonPoint}
                 geometry={[polygonPoints]}
                 options={{
-                    fillColor: "#00FF00",
-                    strokeColor: "#0000FF",
+                    fillColor: "#4D9078",
+                    strokeColor: "#B4436C",
                     opacity: 0.5,
                     strokeWidth: 3,
                     strokeStyle: "shortdash",
@@ -98,9 +119,35 @@ export const CastomMap = () => {
                 geometry={path}
                 options={{
                     balloonCloseButton: false,
-                    strokeColor: "#000",
+                    strokeColor: firstColor,
                     strokeWidth: 4,
-                    strokeOpacity: 0.5,
+                    strokeOpacity: 0.8,
+                }}
+            />)
+    }
+
+    const getRedPath = () => {
+        return (
+            <Polyline
+                geometry={redPath}
+                options={{
+                    balloonCloseButton: false,
+                    strokeColor: secondColor,
+                    strokeWidth: 4,
+                    strokeOpacity: 0.8,
+                }}
+            />)
+    }
+
+    const getGreenPath = () => {
+        return (
+            <Polyline
+                geometry={greenPath}
+                options={{
+                    balloonCloseButton: false,
+                    strokeColor: thirdColor,
+                    strokeWidth: 4,
+                    strokeOpacity: 0.8,
                 }}
             />)
     }
@@ -117,5 +164,7 @@ export const CastomMap = () => {
         {getPlacemark()}
         {isStart ? intersectionPoints?.map((item, index) => getAllPlace(item, index)) : null}
         {path?.length ? getPath() : null}
+        {redPath?.length ? getRedPath() : null}
+        {greenPath?.length ? getGreenPath() : null}
     </Map>
 }

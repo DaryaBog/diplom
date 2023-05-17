@@ -3,6 +3,7 @@ import themeReducer from "./Slices/themeSlice";
 import positionReducer from "./Slices/positionSlice";
 import mapPointReducer from "./Slices/mapPointSlice";
 import calculateDataReducer from "./Slices/calculateDataSlice";
+import lineDataSlice from "./Slices/lineDataSlice";
 
 export const store = configureStore({
   reducer: {
@@ -10,5 +11,6 @@ export const store = configureStore({
     position: positionReducer,
     mapPoint: mapPointReducer,
     calculate: calculateDataReducer,
+    lines: lineDataSlice,
   },
 });

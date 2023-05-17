@@ -26,7 +26,7 @@ export const PolygonButton = () => {
 
 
     return <ButtonWrapper isDark={isDark}>
-        <SettingsButton onClick={onDrawBorder} isDark={isDark}> Определить границы населенного пункта</SettingsButton>
+        <SettingsButton onClick={onDrawBorder} isDark={isDark}> Определить границы</SettingsButton>
         <SettingsButton onClick={onCancel} isDark={isDark}> Отменить последнюю точку границы</SettingsButton>
         <SettingsButton onClick={onStartPoint} isDark={isDark}> Выбрать начало трассы пистьеаого водопровода</SettingsButton>
         <SettingsButton onClick={onDrawPath} isDark={isDark}> Построить план трассы</SettingsButton>

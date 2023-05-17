@@ -21,6 +21,8 @@ function App() {
 }
 
 const AppWrapper = styled.div`
+  position: relative;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   justify-content: center;
