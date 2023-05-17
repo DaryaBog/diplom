@@ -9,13 +9,13 @@ export const SettingsContainer = () => {
   const isDark = useSelector(state => state.theme.isDark)
   const [position, setPosition] = useState(20)
 
-  const onChangeSettingsPosition = () =>{
-    position? setPosition(0) : setPosition(-165)
+  const onChangeSettingsPosition = () => {
+    position ? setPosition(0) : setPosition(-165)
   }
 
   return <SettingsWrapper position={position} isDark={isDark}>
-    <Arrow isDark={isDark} onClick={onChangeSettingsPosition}><Icon src={ArrowWhite}/></Arrow>
-   <PolygonButton/>
+    <Arrow isDark={isDark} onClick={onChangeSettingsPosition}><Icon src={ArrowWhite} /></Arrow>
+    <PolygonButton />
   </SettingsWrapper>
 }
 
@@ -30,7 +30,7 @@ const SettingsWrapper = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 100;
+  z-index: 1;
 `
 
 const Arrow = styled.button`
