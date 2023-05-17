@@ -17,7 +17,7 @@ export const InputForm = () => {
         return (
             <InputWrapper key={data.text}>
                 <Lable >{data.text}</Lable>
-                {data.lable ? <Input name='town' onChange={(e) => onChangeData(e, data.lable)} /> : null}
+                {data.lable ? <Input isDark={isDark} name='town' onChange={(e) => onChangeData(e, data.lable)} /> : null}
             </InputWrapper>
         )
     }
@@ -48,12 +48,16 @@ const Form = styled.form`
 const InputWrapper = styled.div`
     display: flex;
     align-items: center;
+    justify-content: flex-start;
     height: 40px;
 `
 
 const Lable = styled.p``
 
 const Input = styled.input`
+width: 200px;
+background: ${p => p.isDark ? Colors.DARK_BUTTON : Colors.LIGHT_BUTTON};
+border-radius: 5px;
 height: 30px;
 margin: 0 10px;
 `

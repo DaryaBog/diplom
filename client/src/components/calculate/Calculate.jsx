@@ -60,13 +60,13 @@ const CalculateWrapper = styled.div`
 `
 
 const CalculateButton = styled.button`
-    background: ${p => p.isDark ? Colors.DARK_WRAPPER : Colors.LIGHT_WRAPPER};
-    color: ${p => p.isDark ? Colors.WHITE : Colors.LIGHT_BORDER};
-    padding: 10px;
-    border-radius: 15px;
-    border: 1px solid ${p => p.isDark ? Colors.DARK_BORDER : Colors.LIGHT_BORDER}
-    font-size: 30px;
-    text-align: center;
+width: 200px;
+height: 30px;
+margin: 15px;
+text-align: center;
+color: ${p => p.isDark ? Colors.WHITE : Colors.LIGHT_BORDER};
+background: ${p => p.isDark ? Colors.DARK_BUTTON : Colors.LIGHT_BUTTON};
+border-radius: 5px;
 `
 
 const OutputWrapper = styled.div`

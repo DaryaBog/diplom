@@ -42,7 +42,7 @@ export const PathSettings = () => {
             <BlockWrapper isDark={isDark}>
                 <InputWrapper>
                     <Circle
-                        colors={['#4E56F2', '#F44E3B', '#FE9200', '#FCDC00', '#DBDF00']}
+                        colors={['#4E56F2', '#595EB5', '#19209D', '#7A81F9', '#581DAE']}
                         color={colorFirst}
                         onChange={color => setColorFirst(color.hex)} />
                 </InputWrapper>
@@ -61,7 +61,7 @@ export const PathSettings = () => {
             <BlockWrapper isDark={isDark}>
                 <InputWrapper>
                     <Circle
-                        colors={['#F77254', '#F44E3B', '#FE9200', '#FCDC00', '#DBDF00']}
+                        colors={['#F44E3B', '#F77254', '#FE9200', '#FCDC00', '#DBDF00']}
                         color={colorSecond}
                         onChange={color => setColorSecond(color.hex)} />
                 </InputWrapper>
@@ -80,7 +80,7 @@ export const PathSettings = () => {
             <BlockWrapper isDark={isDark}>
                 <InputWrapper>
                     <Circle
-                        colors={['#5FAD56', '#F44E3B', '#FE9200', '#FCDC00', '#DBDF00']}
+                        colors={['#A7C662', '#708F2B', '#5FAD56', '#41827D', '#1C5D59']}
                         color={colorThird}
                         onChange={color => setColorThird(color.hex)} />
                 </InputWrapper>
