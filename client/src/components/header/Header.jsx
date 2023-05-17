@@ -9,7 +9,7 @@ export const Header = () => {
   const isDark = useSelector(state => state.theme.isDark)
 
   return <NavBar isDark={isDark}>
-    <Title isDark={isDark}>Drinking water supply system </Title>
+    <Title isDark={isDark}>Сотовая система экологического питьевого водоснабжения </Title>
     <Search />
     <ThemeButton />
   </NavBar>
