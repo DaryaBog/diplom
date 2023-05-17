@@ -33,7 +33,7 @@ export const Calculate = () => {
 
     return (
         <CalculateWrapper isDark={isDark}>
-            <CalculateButton onClick={onCalculate}>Рассчетать</CalculateButton>
+            <CalculateButton isDark={isDark} onClick={onCalculate}>Рассчетать</CalculateButton>
             {isAlert ?
                 (<Alert>Пожалуйста, заполните пропущенные данные!</Alert>) :
                 getOutData(outputData).map((item, index) => renderItem(item, index))}
