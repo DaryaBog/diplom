@@ -6,6 +6,7 @@ import { Header } from "./components/header/Header";
 import { MapContainer } from "./components/map/MapContainer";
 import { CalculateContainer } from "./components/calculate/CalculateContainer";
 import { SettingsContainer } from "./components/settings/SettingsContainer";
+import { WarningPopup } from "./components/WarningPopup";
 
 function App() {
   const isDark = useSelector((state) => state.theme.isDark);
@@ -16,6 +17,7 @@ function App() {
       <SettingsContainer />
       <MapContainer />
       <CalculateContainer />
+      <WarningPopup />
     </AppWrapper>
   );
 }
