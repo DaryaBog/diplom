@@ -4,6 +4,8 @@ import { Map, Polygon, Placemark, ZoomControl, Polyline } from '@pbe/react-yande
 import { addPoint, onAddStartPoint } from '../../Slices/mapPointSlice'
 import { api } from '../../api'
 import { checkLine } from '../../helpers/checkValidLine'
+import placemarkIcon from './icon.png'
+import startIcon from './flag.png'
 
 export const CastomMap = () => {
     const dispatch = useDispatch()
@@ -20,7 +22,7 @@ export const CastomMap = () => {
     const firstColor = useSelector(state => state.lines.firstColor)
     const secondColor = useSelector(state => state.lines.secondColor)
     const thirdColor = useSelector(state => state.lines.thirdColor)
-   
+
     const firstMinDistance = useSelector(state => state.lines.firstMinDistance)
     const secondMinDistance = useSelector(state => state.lines.secondMinDistance)
     const thirdMinDistance = useSelector(state => state.lines.thirdMinDistance)
@@ -56,7 +58,7 @@ export const CastomMap = () => {
         if (!dataForPath?.polygon.length) return
         const line = await api.getPathInPolygon({ polygon: polygonPoints, startPlace, intersections: intersectionPoints, maxDistance: firstMaxDistance, minDistance: firstMinDistance })
         const lineRed = await api.getPathInPolygon({ polygon: polygonPoints, startPlace, intersections: intersectionPoints, maxDistance: secondMaxDistance, minDistance: secondMinDistance })
-        const lineGreen = await api.getPathInPolygon({ polygon: polygonPoints, startPlace, intersections: intersectionPoints, maxDistance: thirdMaxDistance, minDistance: thirdMinDistance})
+        const lineGreen = await api.getPathInPolygon({ polygon: polygonPoints, startPlace, intersections: intersectionPoints, maxDistance: thirdMaxDistance, minDistance: thirdMinDistance })
         checkLine(line) && setPath(line)
         checkLine(lineRed) && setRedPath(lineRed)
         checkLine(lineGreen) && setGreenPath(lineGreen)
@@ -101,6 +103,11 @@ export const CastomMap = () => {
         return (
             <Placemark
                 geometry={startPlace}
+                options={{
+                    iconLayout: "default#image",
+                    iconImageHref: startIcon,
+                    iconImageSize: [30, 40],
+                }}
             />)
     }, [startPlace])
 
@@ -108,6 +115,11 @@ export const CastomMap = () => {
         return (
             <Placemark
                 geometry={item}
+                options={{
+                    iconLayout: "default#image",
+                    iconImageHref: placemarkIcon,
+                    iconImageSize: [20, 20],
+                }}
                 key={index}
                 onClick={() => setStartPoint(item)}
             />)
