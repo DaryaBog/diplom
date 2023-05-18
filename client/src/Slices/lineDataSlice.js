@@ -16,7 +16,11 @@ const initialState = {
     firstLength: 0,
     secondLength: 0,
     thirdLength: 0,
-  }
+  },
+
+  isHideFirst: false,
+  isHideSecond: false,
+  isHideThird: false,
 };
 
 export const linesSlice = createSlice({
@@ -57,6 +61,16 @@ export const linesSlice = createSlice({
     addLength: (state, action) => {
       state.length = action.payload;
     },
+
+    onHideFirst: (state, action) => {
+      state.isHideFirst = !state.isHideFirst;
+    },
+    onHideSecond: (state, action) => {
+      state.isHideSecond = !state.isHideSecond;
+    },
+    onHideThird: (state, action) => {
+      state.isHideThird = !state.isHideThird;
+    },
   },
 });
 
@@ -71,5 +85,8 @@ export const {
   changeSecondMaxDistance,
   changeThirdMaxDistance,
   addLength,
+  onHideFirst,
+  onHideSecond,
+  onHideThird,
 } = linesSlice.actions;
 export default linesSlice.reducer;

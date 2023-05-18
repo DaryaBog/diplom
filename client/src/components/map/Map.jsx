@@ -33,6 +33,10 @@ export const CastomMap = () => {
     const firstMaxDistance = useSelector(state => state.lines.firstMaxDistance)
     const secondMaxDistance = useSelector(state => state.lines.secondMaxDistance)
     const thirdMaxDistance = useSelector(state => state.lines.thirdMaxDistance)
+
+    const isHideFirst = useSelector(state => state.lines.isHideFirst)
+    const isHideSecond = useSelector(state => state.lines.isHideSecond)
+    const isHideThird = useSelector(state => state.lines.isHideThird)
     //
 
     const [intersectionPoints, setIntersectionPoints] = useState([]);
@@ -213,8 +217,8 @@ export const CastomMap = () => {
         {getPolygon()}
         {getPlacemark()}
         {isStart ? intersectionPoints?.map((item, index) => getAllPlace(item, index)) : null}
-        {path?.length ? getPath() : null}
-        {redPath?.length ? getRedPath() : null}
-        {greenPath?.length ? getGreenPath() : null}
+        {path?.length && !isHideFirst ? getPath() : null}
+        {redPath?.length && !isHideSecond ? getRedPath() : null}
+        {greenPath?.length && !isHideThird ? getGreenPath() : null}
     </Map>
 }

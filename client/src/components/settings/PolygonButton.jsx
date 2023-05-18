@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components'
 import { Colors } from '../../assets/theme/Colors'
 import { onCancelLastPoint, onDraw, onAddStartPoint, onDrawingPath } from '../../Slices/mapPointSlice';
+import { onHideFirst, onHideSecond, onHideThird } from '../../Slices/lineDataSlice';
 
 export const PolygonButton = () => {
     const dispatch = useDispatch()
@@ -24,12 +25,26 @@ export const PolygonButton = () => {
         dispatch(onDrawingPath())
     }
 
+    const onChangeVisibleFirst = () => {
+        dispatch(onHideFirst())
+    }
+
+    const onChangeVisibleSecond = () => {
+        dispatch(onHideSecond())
+    }
+
+    const onChangeVisibleThird = () => {
+        dispatch(onHideThird())
+    }
 
     return <ButtonWrapper isDark={isDark}>
         <SettingsButton onClick={onDrawBorder} isDark={isDark}> Определить границы</SettingsButton>
         <SettingsButton onClick={onCancel} isDark={isDark}> Отменить последнюю точку границы</SettingsButton>
-        <SettingsButton onClick={onStartPoint} isDark={isDark}> Выбрать начало трассы пистьеаого водопровода</SettingsButton>
+        <SettingsButton onClick={onStartPoint} isDark={isDark}> Выбрать начало трассы пистьевого водопровода</SettingsButton>
         <SettingsButton onClick={onDrawPath} isDark={isDark}> Построить план трассы</SettingsButton>
+        <SettingsButton onClick={onChangeVisibleFirst} isDark={isDark}> Скрыть/показать первый путь</SettingsButton>
+        <SettingsButton onClick={onChangeVisibleSecond} isDark={isDark}> Скрыть/показать второй путь</SettingsButton>
+        <SettingsButton onClick={onChangeVisibleThird} isDark={isDark}> Скрыть/показать третий путь</SettingsButton>
     </ButtonWrapper>
 }
 
